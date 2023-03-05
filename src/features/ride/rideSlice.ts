@@ -120,7 +120,7 @@ export const bookRide = createAsyncThunk(
   }
 );
 
-export const { chooseDepartureStops, chooseRide } = rideSlice.actions;
+export const { chooseDepartureStops, chooseRide, wipeState } = rideSlice.actions;
 
 export const selectorAvailableDepartureStops = (state: RootState) =>
   state.ride.availableDepartureStop;

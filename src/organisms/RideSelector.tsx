@@ -21,6 +21,7 @@ import {
   selectorAvailableRidesStatus,
   selectorBooked,
   selectorBookRideStatus,
+  wipeState,
 } from "../features/ride/rideSlice";
 
 import Selector from "../molecules/Selector";
@@ -97,11 +98,16 @@ const RideSelector: FC = () => {
             </Collapse>
           </>
         ) : (
-          <b className="RideSelector-confirmation">
-            Nous avons bien enregistré votre réservation.
-            <br />
-            Merci de votre confiance et à bientôt !
-          </b>
+          <div className="RideSelector-confirmation">
+            <b className="RideSelector-confirmation-text">
+              Nous avons bien enregistré votre réservation.
+              <br />
+              Merci de votre confiance et à bientôt !
+            </b>
+            <Button onClick={() => dispatch(wipeState())}>
+              Réserver un autre trajet
+            </Button>
+          </div>
         )}
       </div>
     );
