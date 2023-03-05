@@ -14,7 +14,12 @@ const RidesList: FC<RidesListProps> = ({
   currentRide,
   handleSelectRide,
 }) => {
-  const timeOptions = { hour: "2-digit", minute: "2-digit" } as const;
+  const timeOptions = {
+    day: "numeric",
+    month: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+  } as const;
 
   return (
     <ListGroup className="RideSelector-list">
@@ -36,24 +41,11 @@ const RidesList: FC<RidesListProps> = ({
                 : "0px",
           }}
         >
-          <div
-          className="RideSelector-list-time"
-          >
-            {new Date(item.departureTime).toLocaleTimeString(
-              "fr-FR",
-              timeOptions
-            )}{" "}
-            -{" "}
-            {new Date(item.arrivalTime).toLocaleTimeString(
-              "fr-FR",
-              timeOptions
-            )}
+          <div className="RideSelector-list-time">
+            {new Date(item.departureTime).toLocaleString("fr-FR", timeOptions)}{" "}
+            - {new Date(item.arrivalTime).toLocaleString("fr-FR", timeOptions)}
           </div>{" "}
-          <b
-            className="RideSelector-list-stop"
-          >
-            {item.arrivalStop}
-          </b>
+          <b className="RideSelector-list-stop">{item.arrivalStop}</b>
         </ListGroup.Item>
       ))}
     </ListGroup>
