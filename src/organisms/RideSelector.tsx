@@ -1,61 +1,55 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import Button from "react-bootstrap/Button";
 import Collapse from "react-bootstrap/Collapse";
-import { useSelector } from "react-redux";
 
-import { useAppDispatch } from "../app/store";
+import Selector from "../molecules/Selector";
+import List from "../molecules/RidesList";
+import Loader from "../atoms/Loader";
 import {
   ApiCallStatus,
   bookRide,
   chooseDepartureStops,
   chooseRide,
-  fetchDepartureStops,
-  Ride,
-  selectorAvailableDepartureStopsStatus,
-  selectorAvailableDepartureStops,
-  selectorAvailableRides,
-  selectorSelectedDepartureStop,
-  selectorSelectedRide,
-  selectorError,
   fetchRides,
-  selectorAvailableRidesStatus,
-  selectorBooked,
-  selectorBookRideStatus,
+  Ride,
   wipeState,
 } from "../features/ride/rideSlice";
+import { useAppDispatch } from "../app/store";
 
-import Selector from "../molecules/Selector";
-import List from "../molecules/RidesList";
-import Loader from "../atoms/Loader";
+type RideSelectorProps = {
+  availableDepartureStops: string[];
+  availableRides: Ride[];
+  selectedDepartureStop: string;
+  selectedRide: Ride;
+  availableDepartureStopsStatus: ApiCallStatus;
+  availableRidesStatus: ApiCallStatus;
+  bookRideStatus: ApiCallStatus;
+  error: string | null;
+  booked: boolean;
+};
 
-const RideSelector: FC = () => {
+const RideSelector: FC<RideSelectorProps> = ({
+  availableDepartureStops,
+  availableRides,
+  selectedDepartureStop,
+  selectedRide,
+  availableDepartureStopsStatus,
+  availableRidesStatus,
+  bookRideStatus,
+  error,
+  booked,
+}) => {
   const dispatch = useAppDispatch();
-  const availableDepartureStops = useSelector(selectorAvailableDepartureStops);
-  const availableRides = useSelector(selectorAvailableRides);
-  const currentDepartureStop = useSelector(selectorSelectedDepartureStop);
-  const currentRide = useSelector(selectorSelectedRide);
-  const availableDepartureStopsStatus = useSelector(
-    selectorAvailableDepartureStopsStatus
-  );
-  const availableRidesStatus = useSelector(selectorAvailableRidesStatus);
-  const bookRideStatus = useSelector(selectorBookRideStatus);
-  const error = useSelector(selectorError);
-  const booked = useSelector(selectorBooked);
-  let content: JSX.Element | null = null;
 
-  useEffect(() => {
-    if (availableDepartureStopsStatus === ApiCallStatus.idle) {
-      dispatch(fetchDepartureStops());
-    }
-  }, [availableDepartureStopsStatus, dispatch]);
+  let content: JSX.Element | null = null;
 
   const handleSelectRide = (ride: Ride) => {
     dispatch(chooseRide(ride));
   };
 
   const handleSubmit = () => {
-    if (currentRide?.id) {
-      dispatch(bookRide(currentRide.id.toString()));
+    if (selectedRide?.id) {
+      dispatch(bookRide(selectedRide.id.toString()));
     }
   };
 
@@ -74,7 +68,7 @@ const RideSelector: FC = () => {
             <Selector
               defaultToggleText="D'où souhaitez-vous partir ?"
               items={availableDepartureStops}
-              selectedItem={currentDepartureStop}
+              selectedItem={selectedDepartureStop}
               setSelectedItem={(selectedItem) => {
                 dispatch(chooseDepartureStops(selectedItem));
                 dispatch(fetchRides(selectedItem));
@@ -90,7 +84,7 @@ const RideSelector: FC = () => {
               <div id="collapseList">
                 <List
                   availableRides={availableRides}
-                  currentRide={currentRide}
+                  currentRide={selectedRide}
                   handleSelectRide={handleSelectRide}
                 />
                 <Button onClick={handleSubmit}>Réserver mon trajet</Button>

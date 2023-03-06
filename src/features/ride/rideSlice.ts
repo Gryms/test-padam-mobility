@@ -19,7 +19,7 @@ export enum ApiCallStatus {
 export const rideSlice = createSlice({
   name: "ride",
   initialState: {
-    availableDepartureStop: [] as string[],
+    availableDepartureStops: [] as string[],
     availableRides: [] as Ride[],
     selectedDepartureStop: "",
     selectedRide: {} as Ride,
@@ -37,11 +37,9 @@ export const rideSlice = createSlice({
       state.selectedRide = action.payload;
     },
     wipeState: (state) => {
-      state.availableDepartureStop = [] as string[];
       state.availableRides = [] as Ride[];
       state.selectedDepartureStop = "";
       state.selectedRide = {} as Ride;
-      state.availableDepartureStopsStatus = ApiCallStatus.idle;
       state.availableRidesStatus = ApiCallStatus.idle;
       state.bookRideStatus = ApiCallStatus.idle;
       state.error = null;
@@ -55,7 +53,7 @@ export const rideSlice = createSlice({
       })
       .addCase(fetchDepartureStops.fulfilled, (state, action) => {
         state.availableDepartureStopsStatus = ApiCallStatus.success;
-        state.availableDepartureStop = action.payload;
+        state.availableDepartureStops = action.payload;
       })
       .addCase(fetchDepartureStops.rejected, (state, action) => {
         state.availableDepartureStopsStatus = ApiCallStatus.error;
@@ -123,7 +121,7 @@ export const bookRide = createAsyncThunk(
 export const { chooseDepartureStops, chooseRide, wipeState } = rideSlice.actions;
 
 export const selectorAvailableDepartureStops = (state: RootState) =>
-  state.ride.availableDepartureStop;
+  state.ride.availableDepartureStops;
 export const selectorAvailableRides = (state: RootState) =>
   state.ride.availableRides;
 export const selectorSelectedDepartureStop = (state: RootState) =>

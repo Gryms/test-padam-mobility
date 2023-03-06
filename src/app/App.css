@@ -20,7 +20,11 @@
   }
 }
 
-.App-header {
+.App-link {
+  color: #61dafb;
+}
+
+.Header {
   background-color: #121428;
   min-height: var(--height-header);
   width: 100%;
@@ -31,8 +35,10 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.Header-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .Research {
