@@ -6,7 +6,7 @@ import Logo from "../atoms/Logo";
 
 const Header = () => (
   <header className="Header">
-    <Navbar bg="dark" variant="dark">
+    <Navbar bg="#121428" variant="dark">
       <Container>
         <Navbar.Brand className="Header-container" href="#">
           <Logo />
