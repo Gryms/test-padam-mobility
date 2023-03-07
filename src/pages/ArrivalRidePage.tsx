@@ -2,13 +2,17 @@ import React from "react";
 
 import ResearchLayout from "../templates/ResearchLayout";
 
-import ArrivalRideSelector from "../organisms/ArrivalRideSelector";
+import RideSelector from "../organisms/RideSelector";
+import { MainInfo } from "../molecules/RidesList";
 
 function ArrivalRidePage() {
   return (
     <div className="App">
       <ResearchLayout>
-        <ArrivalRideSelector selectorDefaultText="Arrêt d'arrivé" />
+        <RideSelector
+          mainInfo={MainInfo.arrival}
+          selectorDefaultText="Arrêt d'arrivé"
+        />
       </ResearchLayout>
     </div>
   );

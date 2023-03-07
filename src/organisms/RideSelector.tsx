@@ -22,6 +22,9 @@ import {
   selectorSelectedDepartureStop,
   selectorSelectedRide,
   setAvailableDepartureStops,
+  fetchRides,
+  fetchDepartureStops,
+  selectorAvailableDepartureStopsStatus,
 } from "../features/ride/rideSlice";
 import { useAppDispatch } from "../app/store";
 
@@ -29,36 +32,55 @@ import Selector from "../molecules/Selector";
 import RidesList, { MainInfo } from "../molecules/RidesList";
 import Loader from "../atoms/Loader";
 
-const ArrivalRideSelector: FC<{ selectorDefaultText: string }> = ({
-  selectorDefaultText,
-}) => {
+const RideSelector: FC<{
+  selectorDefaultText: string;
+  mainInfo: MainInfo;
+}> = ({ selectorDefaultText, mainInfo }) => {
   const dispatch = useAppDispatch();
   const availableDepartureStops = useSelector(selectorAvailableDepartureStops);
   const availableRides = useSelector(selectorAvailableRides);
   const allRides: Ride[] = useSelector(selectorAllRides);
   const selectedDepartureStop = useSelector(selectorSelectedDepartureStop);
   const selectedRide = useSelector(selectorSelectedRide);
+  const availableDepartureStopsStatus = useSelector(
+    selectorAvailableDepartureStopsStatus
+  );
   const allRidesStatus = useSelector(selectorAllRidesStatus);
   const bookRideStatus = useSelector(selectorBookRideStatus);
   const error = useSelector(selectorError);
   const booked = useSelector(selectorBooked);
 
   useEffect(() => {
-    const fetchAvailableDepartureStops = async () => {
-      if (allRidesStatus === ApiCallStatus.idle) {
-        await dispatch(fetchAllRides());
-      }
-    };
-    fetchAvailableDepartureStops();
-    const arrayUniqueByKey = [
-      ...new Map(allRides.map((item) => [item["arrivalStop"], item])).values(),
-    ];
-    dispatch(
-      setAvailableDepartureStops(
-        arrayUniqueByKey.map((ride: Ride) => ride.arrivalStop)
-      )
-    );
-  }, [allRides, allRidesStatus, dispatch]);
+    if (mainInfo === MainInfo.arrival) {
+      const fetchAvailableDepartureStops = async () => {
+        if (allRidesStatus === ApiCallStatus.idle) {
+          await dispatch(fetchAllRides());
+        }
+      };
+      fetchAvailableDepartureStops();
+      const arrayUniqueByKey = [
+        ...new Map(
+          allRides.map((item) => [item["arrivalStop"], item])
+        ).values(),
+      ];
+      dispatch(
+        setAvailableDepartureStops(
+          arrayUniqueByKey.map((ride: Ride) => ride.arrivalStop)
+        )
+      );
+    } else if (
+      mainInfo === MainInfo.departure &&
+      availableDepartureStopsStatus === ApiCallStatus.idle
+    ) {
+      dispatch(fetchDepartureStops());
+    }
+  }, [
+    allRides,
+    allRidesStatus,
+    availableDepartureStopsStatus,
+    dispatch,
+    mainInfo,
+  ]);
 
   let content: JSX.Element | null = null;
 
@@ -77,9 +99,15 @@ const ArrivalRideSelector: FC<{ selectorDefaultText: string }> = ({
     bookRideStatus === ApiCallStatus.loading
   ) {
     content = <Loader variant="light" />;
-  } else if (allRidesStatus === ApiCallStatus.error) {
+  } else if (
+    allRidesStatus === ApiCallStatus.error ||
+    availableDepartureStopsStatus === ApiCallStatus.error
+  ) {
     content = <div>{error}</div>;
-  } else if (allRidesStatus === ApiCallStatus.success) {
+  } else if (
+    allRidesStatus === ApiCallStatus.success ||
+    availableDepartureStopsStatus === ApiCallStatus.success
+  ) {
     content = (
       <div>
         {!booked ? (
@@ -89,17 +117,22 @@ const ArrivalRideSelector: FC<{ selectorDefaultText: string }> = ({
               items={availableDepartureStops}
               selectedItem={selectedDepartureStop}
               setSelectedItem={(selectedItem) => {
-                dispatch(chooseDepartureStops(selectedItem));
-                const arrayAvailableRides = allRides.filter(
-                  (obj) => obj.arrivalStop === selectedItem
-                );
-                dispatch(setAvailableRides(arrayAvailableRides));
+                if (mainInfo === MainInfo.arrival) {
+                  dispatch(chooseDepartureStops(selectedItem));
+                  const arrayAvailableRides = allRides.filter(
+                    (obj) => obj.arrivalStop === selectedItem
+                  );
+                  dispatch(setAvailableRides(arrayAvailableRides));
+                } else {
+                  dispatch(chooseDepartureStops(selectedItem));
+                  dispatch(fetchRides(selectedItem));
+                }
               }}
             />
             <Collapse in={!!selectedDepartureStop}>
               <div id="collapseList">
                 <RidesList
-                  mainInfo={MainInfo.departure}
+                  mainInfo={mainInfo}
                   availableRides={availableRides}
                   currentRide={selectedRide}
                   handleSelectRide={handleSelectRide}
@@ -131,4 +164,4 @@ const ArrivalRideSelector: FC<{ selectorDefaultText: string }> = ({
   );
 };
 
-export default ArrivalRideSelector;
+export default RideSelector;

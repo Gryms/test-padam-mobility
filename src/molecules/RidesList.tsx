@@ -53,7 +53,7 @@ const RidesList: FC<RidesListProps> = ({
             - {new Date(item.arrivalTime).toLocaleString("fr-FR", timeOptions)}
           </div>{" "}
           <b className="RideSelector-list-stop">
-            {mainInfo === MainInfo.arrival
+            {mainInfo === MainInfo.departure
               ? item.arrivalStop
               : item.departureStop}
           </b>
