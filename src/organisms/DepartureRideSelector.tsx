@@ -1,6 +1,7 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Collapse from "react-bootstrap/Collapse";
+import { useSelector } from "react-redux";
 
 import Selector from "../molecules/Selector";
 import RidesList, { MainInfo } from "../molecules/RidesList";
@@ -13,35 +14,40 @@ import {
   fetchRides,
   Ride,
   wipeState,
+  fetchDepartureStops,
+  selectorAvailableDepartureStops,
+  selectorAvailableDepartureStopsStatus,
+  selectorAvailableRides,
+  selectorAvailableRidesStatus,
+  selectorBooked,
+  selectorBookRideStatus,
+  selectorError,
+  selectorSelectedDepartureStop,
+  selectorSelectedRide,
 } from "../features/ride/rideSlice";
 import { useAppDispatch } from "../app/store";
 
-type DepartureRideSelectorProps = {
-  selectorDefaultText: string;
-  availableDepartureStops: string[];
-  availableRides: Ride[];
-  selectedDepartureStop: string;
-  selectedRide: Ride;
-  availableDepartureStopsStatus: ApiCallStatus;
-  availableRidesStatus: ApiCallStatus;
-  bookRideStatus: ApiCallStatus;
-  error: string | null;
-  booked: boolean;
-};
-
-const DepartureRideSelector: FC<DepartureRideSelectorProps> = ({
+const DepartureRideSelector: FC<{ selectorDefaultText: string }> = ({
   selectorDefaultText,
-  availableDepartureStops,
-  availableRides,
-  selectedDepartureStop,
-  selectedRide,
-  availableDepartureStopsStatus,
-  availableRidesStatus,
-  bookRideStatus,
-  error,
-  booked,
 }) => {
   const dispatch = useAppDispatch();
+  const availableDepartureStops = useSelector(selectorAvailableDepartureStops);
+  const availableRides = useSelector(selectorAvailableRides);
+  const selectedDepartureStop = useSelector(selectorSelectedDepartureStop);
+  const selectedRide = useSelector(selectorSelectedRide);
+  const availableDepartureStopsStatus = useSelector(
+    selectorAvailableDepartureStopsStatus
+  );
+  const availableRidesStatus = useSelector(selectorAvailableRidesStatus);
+  const bookRideStatus = useSelector(selectorBookRideStatus);
+  const error = useSelector(selectorError);
+  const booked = useSelector(selectorBooked);
+
+  useEffect(() => {
+    if (availableDepartureStopsStatus === ApiCallStatus.idle) {
+      dispatch(fetchDepartureStops());
+    }
+  }, [availableDepartureStopsStatus, dispatch]);
 
   let content: JSX.Element | null = null;
 

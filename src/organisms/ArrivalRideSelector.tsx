@@ -1,10 +1,8 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
+import { useSelector } from "react-redux";
 import Button from "react-bootstrap/Button";
 import Collapse from "react-bootstrap/Collapse";
 
-import Selector from "../molecules/Selector";
-import RidesList, { MainInfo } from "../molecules/RidesList";
-import Loader from "../atoms/Loader";
 import {
   ApiCallStatus,
   bookRide,
@@ -13,35 +11,54 @@ import {
   Ride,
   setAvailableRides,
   wipeState,
+  fetchAllRides,
+  selectorAllRides,
+  selectorAllRidesStatus,
+  selectorAvailableDepartureStops,
+  selectorAvailableRides,
+  selectorBooked,
+  selectorBookRideStatus,
+  selectorError,
+  selectorSelectedDepartureStop,
+  selectorSelectedRide,
+  setAvailableDepartureStops,
 } from "../features/ride/rideSlice";
 import { useAppDispatch } from "../app/store";
 
-type ArrivalRideSelectorProps = {
-  selectorDefaultText: string;
-  availableDepartureStops: string[];
-  availableRides: Ride[];
-  allRides: Ride[];
-  selectedDepartureStop: string;
-  selectedRide: Ride;
-  allRidesStatus: ApiCallStatus;
-  bookRideStatus: ApiCallStatus;
-  error: string | null;
-  booked: boolean;
-};
+import Selector from "../molecules/Selector";
+import RidesList, { MainInfo } from "../molecules/RidesList";
+import Loader from "../atoms/Loader";
 
-const ArrivalRideSelector: FC<ArrivalRideSelectorProps> = ({
+const ArrivalRideSelector: FC<{ selectorDefaultText: string }> = ({
   selectorDefaultText,
-  availableDepartureStops,
-  availableRides,
-  allRides,
-  selectedDepartureStop,
-  selectedRide,
-  allRidesStatus,
-  bookRideStatus,
-  error,
-  booked,
 }) => {
   const dispatch = useAppDispatch();
+  const availableDepartureStops = useSelector(selectorAvailableDepartureStops);
+  const availableRides = useSelector(selectorAvailableRides);
+  const allRides: Ride[] = useSelector(selectorAllRides);
+  const selectedDepartureStop = useSelector(selectorSelectedDepartureStop);
+  const selectedRide = useSelector(selectorSelectedRide);
+  const allRidesStatus = useSelector(selectorAllRidesStatus);
+  const bookRideStatus = useSelector(selectorBookRideStatus);
+  const error = useSelector(selectorError);
+  const booked = useSelector(selectorBooked);
+
+  useEffect(() => {
+    const fetchAvailableDepartureStops = async () => {
+      if (allRidesStatus === ApiCallStatus.idle) {
+        await dispatch(fetchAllRides());
+      }
+    };
+    fetchAvailableDepartureStops();
+    const arrayUniqueByKey = [
+      ...new Map(allRides.map((item) => [item["arrivalStop"], item])).values(),
+    ];
+    dispatch(
+      setAvailableDepartureStops(
+        arrayUniqueByKey.map((ride: Ride) => ride.arrivalStop)
+      )
+    );
+  }, [allRides, allRidesStatus, dispatch]);
 
   let content: JSX.Element | null = null;
 
