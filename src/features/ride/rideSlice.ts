@@ -174,5 +174,6 @@ export const selectorBookRideStatus = (state: RootState) =>
   state.ride.bookRideStatus;
 export const selectorError = (state: RootState) => state.ride.error;
 export const selectorBooked = (state: RootState) => state.ride.booked;
+export const selectorRide = (state: RootState) => state.ride;
 
 export default rideSlice.reducer;

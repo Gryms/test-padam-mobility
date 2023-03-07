@@ -12,19 +12,10 @@ import {
   setAvailableRides,
   wipeState,
   fetchAllRides,
-  selectorAllRides,
-  selectorAllRidesStatus,
-  selectorAvailableDepartureStops,
-  selectorAvailableRides,
-  selectorBooked,
-  selectorBookRideStatus,
-  selectorError,
-  selectorSelectedDepartureStop,
-  selectorSelectedRide,
   setAvailableDepartureStops,
   fetchRides,
   fetchDepartureStops,
-  selectorAvailableDepartureStopsStatus,
+  selectorRide,
 } from "../features/ride/rideSlice";
 import { useAppDispatch } from "../app/store";
 
@@ -37,18 +28,18 @@ const RideSelector: FC<{
   mainInfo: MainInfo;
 }> = ({ selectorDefaultText, mainInfo }) => {
   const dispatch = useAppDispatch();
-  const availableDepartureStops = useSelector(selectorAvailableDepartureStops);
-  const availableRides = useSelector(selectorAvailableRides);
-  const allRides: Ride[] = useSelector(selectorAllRides);
-  const selectedDepartureStop = useSelector(selectorSelectedDepartureStop);
-  const selectedRide = useSelector(selectorSelectedRide);
-  const availableDepartureStopsStatus = useSelector(
-    selectorAvailableDepartureStopsStatus
-  );
-  const allRidesStatus = useSelector(selectorAllRidesStatus);
-  const bookRideStatus = useSelector(selectorBookRideStatus);
-  const error = useSelector(selectorError);
-  const booked = useSelector(selectorBooked);
+  const {
+    availableDepartureStops,
+    availableRides,
+    allRides,
+    selectedDepartureStop,
+    selectedRide,
+    availableDepartureStopsStatus,
+    allRidesStatus,
+    bookRideStatus,
+    error,
+    booked,
+  } = useSelector(selectorRide);
 
   useEffect(() => {
     if (mainInfo === MainInfo.arrival) {
