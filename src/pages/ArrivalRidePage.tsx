@@ -1,14 +1,15 @@
 import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 import ResearchLayout from "../templates/ResearchLayout";
-import RideSelector from "../organisms/RideSelector";
 import { useAppDispatch } from "../app/store";
-import { useSelector } from "react-redux";
 import {
   ApiCallStatus,
-  fetchDepartureStops,
+  fetchAllRides,
+  Ride,
+  selectorAllRides,
+  selectorAllRidesStatus,
   selectorAvailableDepartureStops,
-  selectorAvailableDepartureStopsStatus,
   selectorAvailableRides,
   selectorAvailableRidesStatus,
   selectorBooked,
@@ -16,38 +17,51 @@ import {
   selectorError,
   selectorSelectedDepartureStop,
   selectorSelectedRide,
+  setAvailableDepartureStops,
 } from "../features/ride/rideSlice";
 
-function DepartRidePage() {
-  const dispatch = useAppDispatch();
+import ArrivalRideSelector from "../organisms/ArrivalRideSelector";
+
+function ArrivalRidePage() {
   const availableDepartureStops = useSelector(selectorAvailableDepartureStops);
+  const dispatch = useAppDispatch();
   const availableRides = useSelector(selectorAvailableRides);
+  const allRides = useSelector(selectorAllRides);
   const selectedDepartureStop = useSelector(selectorSelectedDepartureStop);
   const selectedRide = useSelector(selectorSelectedRide);
-  const availableDepartureStopsStatus = useSelector(
-    selectorAvailableDepartureStopsStatus
-  );
-  const availableRidesStatus = useSelector(selectorAvailableRidesStatus);
+  const allRidesStatus = useSelector(selectorAllRidesStatus);
   const bookRideStatus = useSelector(selectorBookRideStatus);
   const error = useSelector(selectorError);
   const booked = useSelector(selectorBooked);
 
   useEffect(() => {
-    if (availableDepartureStopsStatus === ApiCallStatus.idle) {
-      dispatch(fetchDepartureStops());
-    }
-  }, [availableDepartureStopsStatus, dispatch]);
+    const fetchAvailableDepartureStops = async () => {
+      if (allRidesStatus === ApiCallStatus.idle) {
+        await dispatch(fetchAllRides());
+      }
+    };
+    fetchAvailableDepartureStops();
+    const arrayUniqueByKey = [
+      ...new Map(allRides.map((item) => [item["arrivalStop"], item])).values(),
+    ];
+    dispatch(
+      setAvailableDepartureStops(
+        arrayUniqueByKey.map((ride: Ride) => ride.arrivalStop)
+      )
+    );
+  }, [allRides, allRidesStatus, dispatch]);
 
   return (
     <div className="App">
       <ResearchLayout>
-        <RideSelector
+        <ArrivalRideSelector
+          selectorDefaultText="Où souhaitez-vous arriver ?"
           availableDepartureStops={availableDepartureStops}
           availableRides={availableRides}
+          allRides={allRides}
           selectedDepartureStop={selectedDepartureStop}
           selectedRide={selectedRide}
-          availableDepartureStopsStatus={availableDepartureStopsStatus}
-          availableRidesStatus={availableRidesStatus}
+          allRidesStatus={allRidesStatus}
           bookRideStatus={bookRideStatus}
           error={error}
           booked={booked}
@@ -57,4 +71,4 @@ function DepartRidePage() {
   );
 }
 
-export default DepartRidePage;
+export default ArrivalRidePage;

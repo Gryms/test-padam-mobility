@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 import ResearchLayout from "../templates/ResearchLayout";
-import RideSelector from "../organisms/RideSelector";
 import { useAppDispatch } from "../app/store";
-import { useSelector } from "react-redux";
 import {
   ApiCallStatus,
   fetchDepartureStops,
@@ -17,6 +16,8 @@ import {
   selectorSelectedDepartureStop,
   selectorSelectedRide,
 } from "../features/ride/rideSlice";
+
+import DepartureRideSelector from "../organisms/DepartureRideSelector";
 
 function DepartRidePage() {
   const dispatch = useAppDispatch();
@@ -41,7 +42,8 @@ function DepartRidePage() {
   return (
     <div className="App">
       <ResearchLayout>
-        <RideSelector
+        <DepartureRideSelector
+          selectorDefaultText="D'où souhaitez-vous partir ?"
           availableDepartureStops={availableDepartureStops}
           availableRides={availableRides}
           selectedDepartureStop={selectedDepartureStop}

@@ -3,16 +3,23 @@ import ListGroup from "react-bootstrap/ListGroup";
 
 import { Ride } from "../features/ride/rideSlice";
 
+export enum MainInfo {
+  departure = "departure",
+  arrival = "arrival",
+}
+
 type RidesListProps = {
   availableRides: Ride[];
   currentRide: Ride;
   handleSelectRide: (ride: Ride) => void;
+  mainInfo: MainInfo;
 };
 
 const RidesList: FC<RidesListProps> = ({
   availableRides,
   currentRide,
   handleSelectRide,
+  mainInfo,
 }) => {
   const timeOptions = {
     day: "numeric",
@@ -22,7 +29,7 @@ const RidesList: FC<RidesListProps> = ({
   } as const;
 
   return (
-    <ListGroup className="RideSelector-list">
+    <ListGroup className="RideSelector-list" variant="flush">
       {availableRides.map((item, index) => (
         <ListGroup.Item
           key={item.id}
@@ -45,7 +52,11 @@ const RidesList: FC<RidesListProps> = ({
             {new Date(item.departureTime).toLocaleString("fr-FR", timeOptions)}{" "}
             - {new Date(item.arrivalTime).toLocaleString("fr-FR", timeOptions)}
           </div>{" "}
-          <b className="RideSelector-list-stop">{item.arrivalStop}</b>
+          <b className="RideSelector-list-stop">
+            {mainInfo === MainInfo.arrival
+              ? item.arrivalStop
+              : item.departureStop}
+          </b>
         </ListGroup.Item>
       ))}
     </ListGroup>

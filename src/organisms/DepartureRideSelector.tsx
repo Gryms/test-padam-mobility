@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Collapse from "react-bootstrap/Collapse";
 
 import Selector from "../molecules/Selector";
-import List from "../molecules/RidesList";
+import RidesList, { MainInfo } from "../molecules/RidesList";
 import Loader from "../atoms/Loader";
 import {
   ApiCallStatus,
@@ -16,7 +16,8 @@ import {
 } from "../features/ride/rideSlice";
 import { useAppDispatch } from "../app/store";
 
-type RideSelectorProps = {
+type DepartureRideSelectorProps = {
+  selectorDefaultText: string;
   availableDepartureStops: string[];
   availableRides: Ride[];
   selectedDepartureStop: string;
@@ -28,7 +29,8 @@ type RideSelectorProps = {
   booked: boolean;
 };
 
-const RideSelector: FC<RideSelectorProps> = ({
+const DepartureRideSelector: FC<DepartureRideSelectorProps> = ({
+  selectorDefaultText,
   availableDepartureStops,
   availableRides,
   selectedDepartureStop,
@@ -66,7 +68,7 @@ const RideSelector: FC<RideSelectorProps> = ({
         {!booked ? (
           <>
             <Selector
-              defaultToggleText="D'où souhaitez-vous partir ?"
+              defaultToggleText={selectorDefaultText}
               items={availableDepartureStops}
               selectedItem={selectedDepartureStop}
               setSelectedItem={(selectedItem) => {
@@ -82,7 +84,8 @@ const RideSelector: FC<RideSelectorProps> = ({
               }
             >
               <div id="collapseList">
-                <List
+                <RidesList
+                  mainInfo={MainInfo.arrival}
                   availableRides={availableRides}
                   currentRide={selectedRide}
                   handleSelectRide={handleSelectRide}
@@ -114,4 +117,4 @@ const RideSelector: FC<RideSelectorProps> = ({
   );
 };
 
-export default RideSelector;
+export default DepartureRideSelector;
